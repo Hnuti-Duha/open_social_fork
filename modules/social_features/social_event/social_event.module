@@ -352,30 +352,45 @@ function social_event_node_view_alter(array &$build, EntityInterface $entity, En
       '#markup' => $enrollments_count,
     ];
 
-    // Check if ongoing.
     // Get user current date and time.
     $user_time = new DateTime(
       date(DateTimeItemInterface::DATETIME_STORAGE_FORMAT),
       new DateTimeZone(date_default_timezone_get())
     );
-    // Convert to UTC.
+
+    // Convert datetime value to UTC timestamp.
     $user_time->setTimezone(new DateTimeZone(DateTimeItemInterface::STORAGE_TIMEZONE));
-    $date = $user_time->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT);
-    $node_storage = \Drupal::entityTypeManager()->getStorage('node');
-    $ongoing = $node_storage->getQuery()
-      ->condition('field_event_date', $date, '<=')
-      ->condition('field_event_date_end', $date, '>=')
-      ->condition('nid', $nid)
-      ->accessCheck()
-      ->count()
-      ->execute();
-    if ($ongoing) {
+    $current_date = (int) $user_time->format('U');
+
+    // Get event start date.
+    $event_start_date = new DateTime(
+      $entity->field_event_date->value,
+      new DateTimeZone(DateTimeItemInterface::STORAGE_TIMEZONE)
+    );
+    // Convert datetime value to UTC timestamp.
+    $event_start_date = $event_start_date->format('U');
+
+    // Get event end date.
+    $event_end_date = new DateTime(
+      $entity->field_event_date_end->value,
+      new DateTimeZone(DateTimeItemInterface::STORAGE_TIMEZONE)
+    );
+    // Convert datetime value to UTC timestamp.
+    $event_end_date = $event_end_date->format('U');
+
+    // Check if event is ongoing.
+    // Output 'Ongoing' label.
+    // Set max-age cache for ongoing event.
+    if ($current_date < $event_start_date) {
+      $build['#cache']['max-age'] = $event_start_date - $current_date;
+    }
+    elseif ($current_date <= $event_end_date) {
       $build['ongoing'] = [
         '#type' => '#text_field',
         '#markup' => t('Ongoing'),
       ];
+      $build['#cache']['max-age'] = $event_end_date - $current_date;
     }
-
   }
 }
 
@@ -391,6 +406,7 @@ function social_event_node_view_alter(array &$build, EntityInterface $entity, En
 function social_event_preprocess_node(array &$variables) {
   $view_mode = $variables['view_mode'];
   $node = $variables['node'];
+
   if ($node->getType() === 'event') {
     // Date as a text.
     $variables['event_date'] = _social_event_format_date($node, $view_mode);
