@@ -25,7 +25,7 @@ Feature: Create Open Group
       | City           | Lviv           |
       | Street address | Fedkovycha 60a |
       | Postal code    | 79000          |
-      | Oblast         | Lviv oblast    |
+      | Region         | Lviv oblast    |
     And I press "Save"
     And I should see "Test open group" in the "Main content"
     And I should see "Technopark"
