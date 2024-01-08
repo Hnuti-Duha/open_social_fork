@@ -29,7 +29,7 @@ Feature: Create Public Group
       | City           | Lviv           |
       | Street address | Fedkovycha 60a |
       | Postal code    | 79000          |
-      | Region         | Lviv oblast    |
+    And I select "Lviv oblast" from "Region"
     And I press "Save"
     And I should see "Test public group" in the "Main content"
     And I should see "Technopark"
