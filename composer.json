@@ -99,6 +99,9 @@
             "drupal/search_api": {
                 "Ensure field definition allowed values callbacks are used for field filter callbacks": "https://www.drupal.org/files/issues/2023-12-26/views_filter_options_callback--2949022-17.patch"
             },
+            "drupal/socialbase": {
+              "Issue #3405919: 'social_core.layout' service doesn't run on Drupal 10": "https://www.drupal.org/files/issues/2024-01-30/3405919-2.patch"
+            },
             "drupal/token": {
                 "Ajax call is broken due to token check": "https://www.drupal.org/files/issues/2023-11-10/token-3218969-breaks-some-ajax-forms-3397358-7.patch"
             },
