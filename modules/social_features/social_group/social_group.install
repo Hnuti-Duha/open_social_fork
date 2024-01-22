@@ -5,11 +5,10 @@
  * Install, update and uninstall functions for the social_group module.
  */
 
-use Drupal\Core\Cache\Cache;
 use Drupal\Core\Entity\EntityTypeInterface;
-use Drupal\Core\Entity\Sql\DefaultTableMapping;
 use Drupal\Core\Entity\Sql\SqlContentEntityStorage;
 use Drupal\field\FieldStorageConfigInterface;
+use Drupal\group\Entity\GroupType;
 use Drupal\menu_link_content\Entity\MenuLinkContent;
 use Drupal\user\Entity\Role;
 
@@ -18,7 +17,7 @@ use Drupal\user\Entity\Role;
  *
  * Perform actions related to the installation of social_group.
  */
-function social_group_install() {
+function social_group_install(): void {
   // Grant the default permissions for this feature.
   user_role_grant_permissions(
     'verified',
@@ -383,7 +382,8 @@ function social_group_update_13000() : void {
       'fields' => [
         'field_flexible_group_visibility' => ['community'],
         'field_group_allowed_visibility' => ['group'],
-        'field_group_allowed_join_method' => ['added'], // This can be 'request' depending on groups_field_data.allow_request
+        // This can be 'request' depending on groups_field_data.allow_request.
+        'field_group_allowed_join_method' => ['added'],
       ],
     ],
     'secret_group' => [
@@ -436,11 +436,12 @@ function social_group_update_13000() : void {
   $group_type_content_plugins = $group_content_enabler_manager->getGroupTypePluginMap();
   $group_type_content_plugin_replacement = [];
 
-  // Ensure all plugins for our old group types are supported in flexible groups.
+  // Ensure all plugins for our old group types are supported
+  // in flexible groups.
   foreach (array_keys($group_type_mapping) as $old_group_type) {
     $missing_plugins = array_diff($group_type_content_plugins[$old_group_type], $group_type_content_plugins["flexible_group"]);
     if (count($missing_plugins) !== 0) {
-      throw new \Exception("Flexible group does not support plugins needed for $old_group_type: " . join(", ", $missing_plugins));
+      throw new \Exception("Flexible group does not support plugins needed for $old_group_type: " . implode(", ", $missing_plugins));
     }
 
     foreach ($group_type_content_plugins[$old_group_type] as $plugin_name) {
@@ -462,7 +463,7 @@ function social_group_update_13000() : void {
   }
 
   // Ensure all roles for our old groups exist for flexible groups.
-  /** @var \Drupal\group\Entity\Storage\GroupRoleStorageInterface $group_role_storage */
+  /** @var \Drupal\group\Entity\GroupRoleInterface[] $group_roles */
   $group_roles = \Drupal::entityTypeManager()->getStorage("group_role")->loadMultiple();
   $group_roles_by_type = [];
   foreach ($group_roles as $group_role_id => $role) {
@@ -476,7 +477,7 @@ function social_group_update_13000() : void {
   foreach (array_keys($group_type_mapping) as $old_group_type) {
     $missing_roles = array_diff($group_roles_by_type[$old_group_type], $group_roles_by_type["flexible_group"]);
     if (count($missing_roles) !== 0) {
-      throw new \Exception("Flexible group does not support roles needed for $old_group_type: " . join(", ", $missing_roles));
+      throw new \Exception("Flexible group does not support roles needed for $old_group_type: " . implode(", ", $missing_roles));
     }
   }
 
@@ -493,14 +494,13 @@ function social_group_update_13000() : void {
   }
   $missing_fields = array_diff(array_unique(array_merge(...$missing_fields)), $flexible_group_fields);
   if (count($missing_fields) > 0) {
-    throw new \Exception("Flexible group is missing the following fields which are present on one of the old group types, remove them from the old group types or create them on flexible_group: " . join(", ", $missing_fields));
+    throw new \Exception("Flexible group is missing the following fields which are present on one of the old group types, remove them from the old group types or create them on flexible_group: " . implode(", ", $missing_fields));
   }
 
   try {
     // @todo If the "require group types" setting is set then we should probably
     //   make sure the group type taxonomy terms exist and use those in the
     //   migration.
-
     // The below code transfers our visibility and access settings from the old
     // group types to the new group types. Those access settings are stored in
     // fields on the flexible group bundle. The mapping is provided above.
@@ -594,7 +594,7 @@ function social_group_update_13000() : void {
           $database
             ->update($tableName)
             ->fields(["bundle" => $new_id])
-            ->condition("bundle",  $old_id)
+            ->condition("bundle", $old_id)
             ->execute();
         }
       }
@@ -614,7 +614,8 @@ function social_group_update_13000() : void {
       }
     }
 
-    // Insert 1 into group__field_group_posts_enabled / group_revision__field_group_posts_enabled
+    // Insert 1 into "group__field_group_posts_enabled" or
+    // "group_revision__field_group_posts_enabled".
     $posts_enabled_field_storage = $fsc_storage->load("group.field_group_posts_enabled");
     assert($posts_enabled_field_storage instanceof FieldStorageConfigInterface);
     foreach ($group_table_mapping->getAllFieldTableNames("field_group_posts_enabled") as $tableName) {
@@ -642,14 +643,15 @@ function social_group_update_13000() : void {
 
       $revision_id_query = $database->select($group_revision_data_table, "revision_data");
       $revision_id_query->addField("revision_data", "revision_id", "revision_id");
-      $revision_id_query->condition("id", $group_id_query, "IN");
+      $revision_id_query->condition("id", $group_id_query ?? [0], "IN");
 
       $database->insert($tableName)
         ->from($from)
         ->execute();
     }
 
-    // There's a base `allow_request` field that affects the value "field_group_allowed_join_method" for closed groups.
+    // There's a base `allow_request` field that affects the value
+    // "field_group_allowed_join_method" for closed groups.
     $join_method_field_storage = $fsc_storage->load("group.field_group_allowed_join_method");
     assert($join_method_field_storage instanceof FieldStorageConfigInterface);
     foreach ($group_table_mapping->getAllFieldTableNames("field_group_allowed_join_method") as $tableName) {
@@ -660,7 +662,7 @@ function social_group_update_13000() : void {
       $revision_id_query = $database->select($group_revision_data_table, "revision_data");
       $revision_id_query->addField("revision_data", "revision_id", "revision_id");
       $revision_id_query->condition("id", $group_id_query, "IN");
-      $revision_id_query->condition("allow_request", 1);
+      $revision_id_query->condition("allow_request", '1');
 
       $database->update($tableName)
         ->condition("revision_id", $revision_id_query, "IN")
@@ -709,21 +711,122 @@ function social_group_update_13001() : void {
     return;
   }
 
+  // Remove deprecated configurations from config dependencies to prevent
+  // deleting them on deprecated group types uninstall.
+  $configs = [
+    'views.view.discussions',
+    'views.view.discussions_group',
+    'views.view.group_events',
+    'views.view.group_manage_members',
+    'views.view.group_members',
+    'views.view.group_topics',
+  ];
+
+  $deprecated_entity_types = [
+    'group_content_type_3d6b5f69ef04a',
+    'group_content_type_bf33df57c91c6',
+    'group_content_type_f256b744237e6',
+    'group_content_type_c8bae2527294c',
+    'closed_group',
+    'open_group',
+    'public_group',
+    'secret_group',
+  ];
+
+  foreach ($configs as $name) {
+    $config = \Drupal::configFactory()->getEditable($name);
+    $dependencies = $config->get('dependencies.config');
+    if (!$dependencies) {
+      continue;
+    }
+    foreach ($deprecated_entity_types as $entity_type_id) {
+      $dependencies = array_filter($dependencies, function ($dependency) use ($entity_type_id) {
+        return !str_contains($dependency, $entity_type_id);
+      });
+    }
+    $config->set('dependencies.config', $dependencies);
+    $config->save();
+  }
+
+  // Invoke permissions as well.
+  foreach (\Drupal::entityTypeManager()->getStorage('user_role')->loadMultiple() as $role) {
+    /** @var \Drupal\user\RoleInterface $role */
+    $permissions = $role->getPermissions();
+    $deprecated_permissions = array_filter($permissions, function ($permission) use ($deprecated_entity_types) {
+      foreach ($deprecated_entity_types as $entity_type_id) {
+        if (str_contains($permission, $entity_type_id)) {
+          return TRUE;
+        }
+      }
+      return FALSE;
+    });
+
+    if ($deprecated_permissions) {
+      user_role_revoke_permissions($role->id(), $deprecated_permissions);
+    }
+  }
+
+  // Clean up views displays.
+  $view_displays = \Drupal::configFactory()
+    ->listAll('core.entity_view_display.');
+
+  foreach ($view_displays as $name) {
+    $config = \Drupal::configFactory()->getEditable($name);
+    $content = (array) $config->get('content');
+    if (empty($content)) {
+      continue;
+    }
+
+    unset($content['groups_type_public_group']);
+    unset($content['groups_type_open_group']);
+    unset($content['groups_type_closed_group']);
+    unset($content['groups_type_secret_group']);
+
+    if (array_diff(array_keys((array) $config->get('content')), array_keys($content))) {
+      $config->set('content', $content);
+      $config->save();
+    }
+  }
+
   // Uninstall the secret group module if enabled.
-  // This should take care of removing everything from secret group.
+  // This should take care of removing everything from a secret group.
   \Drupal::service("module_installer")->uninstall(["social_secret_group_featured", "social_group_secret"]);
 
   // Delete our old group types.
-  $group_type_storage = \Drupal::entityTypeManager()
-    ->getStorage("group_type");
+  $group_type_storage = \Drupal::entityTypeManager()->getStorage("group_type");
   foreach ($group_type_storage->loadMultiple(["closed_group", "open_group", "public_group"]) as $group_type) {
+    if (!$group_type instanceof GroupType) {
+      continue;
+    }
     $group_type->delete();
   }
 }
 
 /**
+ * Remove deprecated group types.
+ */
+function social_group_update_13002(): ?string {
+  // Allow platforms to opt out of the group migration, for example if they want
+  // to build it themselves and take more scenario's into account than common
+  // Open Social installations will have.
+  if (\Drupal::state()->get('social_group_group_type_migration_opt_out', FALSE)) {
+    \Drupal::logger('social_group')->info('Platform has opted out of group migration.');
+    return NULL;
+  }
+
+  /** @var \Drupal\update_helper\Updater $updateHelper */
+  $updateHelper = \Drupal::service('update_helper.updater');
+
+  // Execute configuration update definitions with logging of success.
+  $updateHelper->executeUpdate('social_group', __FUNCTION__);
+
+  // Output logged messages to a related channel of update execution.
+  return $updateHelper->logger()->output();
+}
+
+/**
  * Clean up any group migration opt-out that might be enabled.
  */
-function social_group_update_13002() : void {
+function social_group_update_13003() : void {
   \Drupal::state()->delete("social_group_group_type_migration_opt_out");
 }
