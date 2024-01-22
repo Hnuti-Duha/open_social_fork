@@ -7611,6 +7611,11 @@ parameters:
 			path: modules/social_features/social_group/modules/social_group_default_route/social_group_default_route.module
 
 		-
+			message: "#^Constant Drupal\\\\social_group_default_route\\\\EventSubscriber\\\\RedirectSubscriber\\:\\:DEFAULT_CLOSED_ROUTE is unused.$#"
+			count: 1
+			path: modules/social_features/social_group/modules/social_group_default_route/src/EventSubscriber/RedirectSubscriber.php
+
+		-
 			message: "#^Method Drupal\\\\social_group_default_route\\\\EventSubscriber\\\\RedirectSubscriber\\:\\:groupLandingPage\\(\\) has no return type specified\\.$#"
 			count: 1
 			path: modules/social_features/social_group/modules/social_group_default_route/src/EventSubscriber/RedirectSubscriber.php
@@ -7861,9 +7866,9 @@ parameters:
 			path: modules/social_features/social_group/modules/social_group_flexible_group/src/FlexibleGroupContentVisibilityUpdate.php
 
 		-
-			message: "#^Method Drupal\\\\social_group_flexible_group\\\\SocialGroupFlexibleGroupConfigOverride\\:\\:createConfigObject\\(\\) should return Drupal\\\\Core\\\\Config\\\\StorableConfigBase but returns null\\.$#"
+			message: "#^Parameter \\#2 \\$value of method Drupal\\\\Core\\\\Database\\\\Query\\\\ConditionInterface\\:\\:condition\\(\\) expects array\\|Drupal\\\\Core\\\\Database\\\\Query\\\\SelectInterface\\|string\\|null, int\\|string\\|null given\\.$#"
 			count: 1
-			path: modules/social_features/social_group/modules/social_group_flexible_group/src/SocialGroupFlexibleGroupConfigOverride.php
+			path: modules/social_features/social_group/modules/social_group_flexible_group/src/FlexibleGroupContentVisibilityUpdate.php
 
 		-
 			message: "#^Method Drupal\\\\social_group_flexible_group\\\\Subscriber\\\\Route\\:\\:alterRoutes\\(\\) has no return type specified\\.$#"
@@ -8267,7 +8272,7 @@ parameters:
 
 		-
 			message: "#^Cannot call method getOutsiderRole\\(\\) on Drupal\\\\group\\\\Entity\\\\GroupType\\|null\\.$#"
-			count: 2
+			count: 1
 			path: modules/social_features/social_group/modules/social_group_request/social_group_request.install
 
 		-
@@ -8836,11 +8841,6 @@ parameters:
 			path: modules/social_features/social_group/social_group.module
 
 		-
-			message: "#^Function _social_group_visibility_settings_submit\\(\\) has no return type specified\\.$#"
-			count: 1
-			path: modules/social_features/social_group/social_group.module
-
-		-
 			message: "#^Function _social_membership_delete_form_submit\\(\\) has no return type specified\\.$#"
 			count: 1
 			path: modules/social_features/social_group/social_group.module
@@ -8941,21 +8941,6 @@ parameters:
 			path: modules/social_features/social_group/social_group.module
 
 		-
-			message: "#^Function social_group_form_entity_access_by_field_visibility_form_alter\\(\\) has no return type specified\\.$#"
-			count: 1
-			path: modules/social_features/social_group/social_group.module
-
-		-
-			message: "#^Function social_group_form_entity_access_by_field_visibility_form_alter\\(\\) has parameter \\$form with no type specified\\.$#"
-			count: 1
-			path: modules/social_features/social_group/social_group.module
-
-		-
-			message: "#^Function social_group_form_entity_access_by_field_visibility_form_alter\\(\\) has parameter \\$form_id with no type specified\\.$#"
-			count: 1
-			path: modules/social_features/social_group/social_group.module
-
-		-
 			message: "#^Function social_group_form_node_form_alter\\(\\) has no return type specified\\.$#"
 			count: 1
 			path: modules/social_features/social_group/social_group.module
@@ -8967,11 +8952,6 @@ parameters:
 
 		-
 			message: "#^Function social_group_get_all_groups\\(\\) has no return type specified\\.$#"
-			count: 1
-			path: modules/social_features/social_group/social_group.module
-
-		-
-			message: "#^Function social_group_get_all_open_groups\\(\\) has no return type specified\\.$#"
 			count: 1
 			path: modules/social_features/social_group/social_group.module
 
@@ -9196,11 +9176,6 @@ parameters:
 			path: modules/social_features/social_group/social_group.module
 
 		-
-			message: "#^Function template_preprocess_group_settings_help\\(\\) has no return type specified\\.$#"
-			count: 1
-			path: modules/social_features/social_group/social_group.module
-
-		-
 			message: "#^Offset 'add' does not exist on array\\{\\}\\|array\\{add\\: non\\-empty\\-array\\<int\\<0, max\\>, non\\-falsy\\-string\\>, delete\\: non\\-empty\\-array\\<int\\<0, max\\>, non\\-falsy\\-string\\>, edit\\: non\\-empty\\-array\\<int\\<0, max\\>, non\\-falsy\\-string\\>\\}\\.$#"
 			count: 3
 			path: modules/social_features/social_group/social_group.module
@@ -9237,7 +9212,7 @@ parameters:
 
 		-
 			message: "#^Parameter \\#1 \\$type of method Drupal\\\\social_group\\\\SocialGroupHelperService\\:\\:getDefaultGroupVisibility\\(\\) expects string, int\\|string\\|null given\\.$#"
-			count: 3
+			count: 2
 			path: modules/social_features/social_group/social_group.module
 
 		-
@@ -9381,7 +9356,7 @@ parameters:
 
 		-
 			message: "#^\\\\Drupal calls should be avoided in classes, use dependency injection instead$#"
-			count: 2
+			count: 1
 			path: modules/social_features/social_group/src/EventSubscriber/RedirectSubscriber.php
 
 		-
@@ -9523,16 +9498,6 @@ parameters:
 			message: "#^Method Drupal\\\\social_group\\\\Plugin\\\\Action\\\\SocialSendEmail\\:\\:execute\\(\\) has parameter \\$entity with no type specified\\.$#"
 			count: 1
 			path: modules/social_features/social_group/src/Plugin/Action/SocialSendEmail.php
-
-		-
-			message: "#^\\\\Drupal calls should be avoided in classes, use dependency injection instead$#"
-			count: 1
-			path: modules/social_features/social_group/src/Plugin/Block/GroupAddEventBlock.php
-
-		-
-			message: "#^\\\\Drupal calls should be avoided in classes, use dependency injection instead$#"
-			count: 1
-			path: modules/social_features/social_group/src/Plugin/Block/GroupAddTopicBlock.php
 
 		-
 			message: "#^\\\\Drupal calls should be avoided in classes, use dependency injection instead$#"
@@ -11077,7 +11042,7 @@ parameters:
 
 		-
 			message: "#^\\\\Drupal calls should be avoided in classes, use dependency injection instead$#"
-			count: 3
+			count: 2
 			path: modules/social_features/social_post/src/PostAccessControlHandler.php
 
 		-
@@ -13896,3 +13861,8 @@ parameters:
 			message: "#^\\\\Drupal calls should be avoided in classes, use dependency injection instead$#"
 			count: 2
 			path: modules/social_features/social_user_export/src/Plugin/Action/ExportUser.php
+
+		-
+			message: "#^Negated boolean expression is always false.$#"
+			count: 2
+			path: modules/social_features/social_group/modules/social_group_invite/src/Plugin/Join/SocialGroupInviteJoin.php

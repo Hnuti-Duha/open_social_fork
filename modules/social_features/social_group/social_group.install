@@ -221,13 +221,6 @@ function social_group_update_dependencies() {
 }
 
 /**
- * Implements hook_update_last_removed().
- */
-function social_group_update_last_removed() : int {
-  return 8907;
-}
-
-/**
  * Add translations support for views with groups.
  */
 function social_group_update_10201() {
@@ -270,7 +263,7 @@ function social_group_update_10302() {
 }
 
 /**
- * Import flag "Mute Group Notifications" configurations.
+ * Implements hook_update_last_removed().
  */
 function social_group_update_last_removed() : int {
   return 11902;
