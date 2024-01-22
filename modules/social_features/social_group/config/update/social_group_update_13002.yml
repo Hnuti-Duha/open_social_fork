@@ -23,51 +23,8 @@ block.block.views_block__group_managers_block_list_managers:
           group_types:
             flexible_group: flexible_group
 
-views.view.group_events:
-  expected_config: { }
-  update_actions:
-    delete:
-      dependencies:
-        config: {  }
-      display:
-        default:
-          display_options:
-            filters:
-              type:
-                value:
-                  open_group-group_node-event: {  }
-                  closed_group-group_node-event: {  }
-                  public_group-group_node-event: {  }
-                  secret_group-group_node-event: {  }
-            arguments:
-              gid:
-                validate_options:
-                  bundles:
-                    closed_group: {  }
-                    open_group: {  }
-                    public_group: {  }
-                    secret_group: {  }
-    add:
-      dependencies:
-        config:
-          - core.entity_view_mode.group_content.teaser
-          - group.content_type.flexible_group-group_node-event
-          - group.type.flexible_group
-      display:
-        default:
-          display_options:
-            filters:
-              type:
-                value:
-                  flexible_group-group_node-event: flexible_group-group_node-event
-            arguments:
-              gid:
-                validate_options:
-                  bundles:
-                    flexible_group: flexible_group
-
 views.view.group_manage_members:
-  expected_config: { }
+  expected_config: {  }
   update_actions:
     delete:
       dependencies:
@@ -76,26 +33,13 @@ views.view.group_manage_members:
         default:
           display_options:
             filters:
-              type:
-                value:
-                  closed_group-group_membership: {  }
-                  open_group-group_membership: {  }
-                  public_group-group_membership: {  }
+              type: {  }
     add:
       dependencies:
         config:
           - core.entity_view_mode.profile.table
           - field.storage.group_content.group_roles
           - field.storage.profile.field_profile_organization
-          - group.content_type.flexible_group-group_membership
-          - group.type.flexible_group
-      display:
-        default:
-          display_options:
-            filters:
-              type:
-                value:
-                  flexible_group-group_membership: flexible_group-group_membership
 
 views.view.group_managers:
   expected_config: { }
@@ -170,12 +114,7 @@ views.view.group_members:
         default:
           display_options:
             filters:
-              type:
-                value:
-                  open_group-group_membership: {  }
-                  closed_group-group_membership: {  }
-                  public_group-group_membership: {  }
-                  secret_group-group_membership: {  }
+              type: {  }
             arguments:
               gid:
                 validate_options:
@@ -185,17 +124,24 @@ views.view.group_members:
                     public_group: public_group
                     secret_group: secret_group
     add:
-      dependencies:
-        config:
-          - group.content_type.flexible_group-group_membership
-          - group.type.flexible_group
       display:
         default:
           display_options:
-            filters:
-              type:
-                value:
-                  flexible_group-group_membership: flexible_group-group_membership
+            relationships:
+              gc__user:
+                id: gc__user
+                table: group_content_field_data
+                field: gc__user
+                relationship: none
+                group_type: group
+                admin_label: 'Group content User'
+                entity_type: group_content
+                plugin_id: group_content_to_entity
+                required: true
+                group_content_plugins:
+                  group_membership: group_membership
+                  group_invitation: '0'
+                  group_membership_request: '0'
 
 views.view.group_topics:
   expected_config: { }
@@ -207,39 +153,48 @@ views.view.group_topics:
         default:
           display_options:
             filters:
-              type:
-                value:
-                  closed_group-group_node-topic: {  }
-                  open_group-group_node-topic: {  }
-                  public_group-group_node-topic: {  }
-                  secret_group-group_node-topic:  {  }
+              type: {  }
             arguments:
               gid:
-                validate_options:
-                  bundles:
-                    closed_group: {  }
-                    open_group: {  }
-                    public_group: {  }
-                    secret_group: {  }
+                validate_options: {  }
     add:
       dependencies:
         config:
           - core.entity_view_mode.group_content.teaser
-          - group.content_type.flexible_group-group_node-topic
-          - group.type.flexible_group
           - taxonomy.vocabulary.topic_types
+    change:
+      display:
+        default:
+          display_options:
+            relationships:
+              gc__node:
+                required: true
+
+views.view.group_events:
+  expected_config: { }
+  update_actions:
+    delete:
+      dependencies:
+        config: {  }
       display:
         default:
           display_options:
             filters:
-              type:
-                value:
-                  flexible_group-group_node-topic: flexible_group-group_node-topic
+              type: {  }
             arguments:
               gid:
-                validate_options:
-                  bundles:
-                    flexible_group: flexible_group
+                validate_options: {  }
+    add:
+      dependencies:
+        config:
+          - core.entity_view_mode.group_content.teaser
+    change:
+      display:
+        default:
+          display_options:
+            relationships:
+              gc__node:
+                required: true
 
 views.view.newest_groups:
   expected_config: { }
